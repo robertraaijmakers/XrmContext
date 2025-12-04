@@ -1,7 +1,3 @@
-﻿Microsoft.CrmSdk.CoreAssemblies
-Microsoft.CrmSdk.Deployment
-Microsoft.CrmSdk.XrmTooling.CoreAssembly
-Microsoft.IdentityModel.Clients.ActiveDirectory
-Microsoft.Rest.ClientRuntime
+﻿Microsoft.PowerPlatform.Dataverse.Client
 Newtonsoft.Json
 FSharp.Core

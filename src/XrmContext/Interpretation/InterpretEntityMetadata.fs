@@ -109,7 +109,7 @@ let interpretAttribute deprecatedPrefix labelmapping localizations entityNames (
 
       let isDeprecated = 
         match displayName, deprecatedPrefix with
-        | Some x, Some prefix -> x.StartsWith(prefix)
+        | Some x, Some (prefix: string) -> x.StartsWith(prefix)
         | _ -> false
 
       options, Some {

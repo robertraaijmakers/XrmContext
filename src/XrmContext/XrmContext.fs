@@ -11,19 +11,18 @@ open System.Runtime.Serialization.Json
 
 type XrmContext private () =
 
-  static member GenerateFromCrm(url, ?method, ?username, ?password, ?domain, ?ap, ?mfaAppId, ?mfaReturnUrl, ?mfaClientSecret, ?connectionString, ?out, ?entities, ?solutions, ?ns, ?context, ?deprecatedPrefix, ?sdkVersion, ?intersections,?labelMapping, ?oneFile, ?includeEntityTypeCode, ?localizations, ?prompt) = 
+  static member GenerateFromCrm(url, ?method, ?username, ?password, ?mfaAppId, ?mfaClientSecret, ?connectionString, ?out, ?entities, ?solutions, ?ns, ?context, ?deprecatedPrefix, ?sdkVersion, ?intersections,?labelMapping, ?oneFile, ?includeEntityTypeCode, ?localizations) = 
     let xrmAuth = 
       { XrmAuthentication.url = Uri(url)
         method = method
         username = username
         password = password
-        domain = domain
-        ap = ap 
+        domain = None
+        ap = None
         clientId = mfaAppId
-        returnUrl = mfaReturnUrl
+        returnUrl = None
         clientSecret = mfaClientSecret
-        connectionString = connectionString
-        prompt = prompt}
+        connectionString = connectionString}
     
     let rSettings = 
       { XcRetrievalSettings.entities = entities

@@ -1,33 +1,22 @@
 ﻿open System
-open Microsoft.Xrm.Sdk.Client
 open DG.XrmContext
 open Utility
 open CommandLineHelper
-open Microsoft.IdentityModel.Clients.ActiveDirectory
+open Microsoft.Xrm.Sdk.Client
 
 let getXrmAuth parsedArgs = 
   let ap = 
-    getArg parsedArgs "ap" (fun ap ->
+    getArg parsedArgs "ap" (fun (ap:string) ->
       Enum.Parse(typeof<AuthenticationProviderType>, ap) 
         :?> AuthenticationProviderType)
+        
   let method =
     getArg parsedArgs "method" (fun method ->
       match method with
       | "OAuth" -> ConnectionType.OAuth
       | "ClientSecret" -> ConnectionType.ClientSecret
       | "ConnectionString" -> ConnectionType.ConnectionString
-      | _ -> ConnectionType.Proxy 
-    )
-
-  let prompt = 
-    getArg parsedArgs "prompt" (fun prompt -> 
-    match prompt with 
-    | "Always" -> PromptBehavior.Always
-    | "Never" -> PromptBehavior.Never
-    | "Auto" -> PromptBehavior.Auto
-    | "RefreshSession" -> PromptBehavior.RefreshSession
-    | "SelectAccount" -> PromptBehavior.SelectAccount
-    | _ -> PromptBehavior.Auto
+      | _ -> ConnectionType.OAuth 
     )
 
   { XrmAuthentication.url = Uri(Map.find "url" parsedArgs)
@@ -39,9 +28,7 @@ let getXrmAuth parsedArgs =
     returnUrl = Map.tryFind "mfaReturnUrl" parsedArgs
     clientSecret = Map.tryFind "mfaClientSecret" parsedArgs
     connectionString = Map.tryFind "connectionString" parsedArgs
-    ap = ap 
-    prompt = prompt
-  }
+    ap = ap; }
 
 let getRetrieveSettings parsedArgs =
   let entities = getListArg parsedArgs "entities" (fun s -> s.ToLower())

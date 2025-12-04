@@ -10,7 +10,6 @@ open Microsoft.Xrm.Sdk.Messages
 open Microsoft.Xrm.Sdk.Query
 open Microsoft.Xrm.Sdk.Metadata
 open Microsoft.Crm.Sdk.Messages
-open Microsoft.IdentityModel.Clients.ActiveDirectory
 
 
 // Execute request
@@ -203,7 +202,7 @@ let retrieveSolutionEntities proxy solutionName =
 
 // Proxy helper that makes it easy to get a new proxy instance
 let proxyHelper xrmAuth () =
-  let method = xrmAuth.method ?| ConnectionType.Proxy
+  let method = xrmAuth.method ?| ConnectionType.ClientSecret
   let username = xrmAuth.username ?| ""
   let password = xrmAuth.password ?| ""
   let ap = xrmAuth.ap ?| AuthenticationProviderType.OnlineFederation
@@ -211,15 +210,25 @@ let proxyHelper xrmAuth () =
   let clientId = xrmAuth.clientId ?| ""
   let returnUrl = xrmAuth.returnUrl ?| ""
   let clientSecret = xrmAuth.clientSecret ?| ""
-  let prompt = xrmAuth.prompt ?| PromptBehavior.Auto
 
-  let proxyInstance = 
-    match method with
-    | Proxy ->
-      let manager = CrmAuth.getServiceManagement xrmAuth.url
-      let authToken = CrmAuth.authenticate manager ap username password domain
-      CrmAuth.getOrganizationServiceProxy manager authToken
-    | OAuth -> CrmAuth.getCrmServiceClient username password xrmAuth.url clientId returnUrl prompt
-    | ClientSecret -> CrmAuth.getCrmServiceClientClientSecret xrmAuth.url clientId clientSecret
-    | ConnectionString -> CrmAuth.getCrmServiceClientConnectionString xrmAuth.connectionString
-  proxyInstance
+  try
+    let proxyInstance = 
+      match method with
+      | OAuth -> CrmAuth.getCrmServiceClient username password xrmAuth.url clientId returnUrl 
+      | ClientSecret -> CrmAuth.getCrmServiceClientClientSecret xrmAuth.url clientId clientSecret
+      | ConnectionString -> CrmAuth.getCrmServiceClientConnectionString xrmAuth.connectionString
+    proxyInstance
+  with
+  | ex ->
+    eprintfn "\n=== Connection Error Details ==="
+    eprintfn "Method: %A" method
+    eprintfn "URL: %s" (xrmAuth.url.ToString())
+    eprintfn "Username: %s" username
+    eprintfn "Client ID: %s" clientId
+    eprintfn "Return URL: %s" returnUrl
+    eprintfn "Error: %s" ex.Message
+    if not (isNull ex.InnerException) then
+      eprintfn "Inner Error: %s" ex.InnerException.Message
+    eprintfn "Stack Trace:\n%s" ex.StackTrace
+    eprintfn "================================\n"
+    reraise()

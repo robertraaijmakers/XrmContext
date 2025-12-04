@@ -1,16 +1,14 @@
 ﻿namespace DG.XrmContext
 
 open System
-open Microsoft.Xrm.Sdk.Client
 open Microsoft.Xrm.Sdk.Metadata
+open Microsoft.Xrm.Sdk.Client
 open System.Runtime.Serialization
-open Microsoft.IdentityModel.Clients.ActiveDirectory
 
 type Version = int * int * int * int
 type EntityIntersect = string * string[]
 
 type ConnectionType = 
-  | Proxy
   | OAuth
   | ClientSecret
   | ConnectionString   
@@ -26,7 +24,6 @@ type XrmAuthentication = {
   returnUrl: string option
   clientSecret: string option
   connectionString: string option
-  prompt: PromptBehavior option
 }
 
 type XcGenerationSettings = {
